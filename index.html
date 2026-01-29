@@ -6,8 +6,10 @@
   <title>root@colinlee.me: ~</title>
   <style>
     body {
-      background-color: #0d0d0d; /* Deep black-gray */
-      color: #33ff00; /* Classic Terminal Green */
+      background-color: #0d0d0d;
+      color: #33ff00;
+      /* Increased font size for better visibility */
+      font-size: 1.5rem; 
       font-family: 'Courier New', Courier, monospace;
       height: 100vh;
       margin: 0;
@@ -31,19 +33,19 @@
       right: 0;
       background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
       z-index: 2;
-      background-size: 100% 2px, 3px 100%;
+      background-size: 100% 3px, 3px 100%;
       pointer-events: none;
     }
 
     .terminal {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
       z-index: 1;
     }
 
     p {
-      margin: 0 0 10px 0;
-      opacity: 0; /* Hidden by default for animation */
+      margin: 0 0 1rem 0; /* Added spacing between lines */
+      opacity: 0;
       animation: typeOn 0.1s forwards;
     }
 
@@ -52,18 +54,18 @@
       font-weight: bold;
     }
 
-    /* Staggered animation delays to simulate loading */
+    /* Animation delays */
     .line-1 { animation-delay: 0.2s; }
     .line-2 { animation-delay: 1.0s; }
     .line-3 { animation-delay: 1.8s; }
     .line-4 { animation-delay: 2.5s; }
     .line-5 { animation-delay: 3.2s; }
 
-    /* The blinking cursor at the end */
+    /* The blinking cursor */
     .cursor::after {
       content: '█';
       animation: blink 1s infinite;
-      margin-left: 5px;
+      margin-left: 8px;
     }
 
     @keyframes typeOn {
@@ -87,10 +89,10 @@
   </div>
 
   <script>
-    // Redirects to your new site after 3.8 seconds
+    // Redirects to your new site after 6.5 seconds
     setTimeout(function() {
         window.location.href = "https://vexel.wtf";
-    }, 3800);
+    }, 6500);
   </script>
 
 </body>
