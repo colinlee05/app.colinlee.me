@@ -1,3 +1,3 @@
-# https://prog1.colinlee.me
+# https://app.colinlee.me
 
 This app is under construction. 
