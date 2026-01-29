@@ -3,7 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
   <title>root@colinlee.me: ~</title>
+  <meta name="description" content="Redirecting to Vexel Systems..." />
+  <meta property="og:title" content="root@colinlee.me" />
+  <meta property="og:description" content="System migration in progress. Rerouting to Vexel." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#0d0d0d" />
+  <meta name="robots" content="noindex, follow" />
+
   <style>
     body {
       background-color: #0d0d0d;
@@ -12,32 +20,44 @@
       font-family: 'Courier New', Courier, monospace;
       height: 100vh;
       margin: 0;
-      padding: 2rem;
+      padding: 0; /* Removing padding from body to let canvas hit edges */
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      align-items: center; /* Centering everything */
       overflow: hidden;
       text-shadow: 0 0 5px rgba(51, 255, 0, 0.4);
+      position: relative;
     }
 
-    /* Scanline effect */
-    body::before {
-      content: " ";
-      display: block;
+    /* Matrix Rain Canvas (Background) */
+    #matrix-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0; /* Behind everything */
+      opacity: 0.15; /* Subtle: faint enough not to distract */
+    }
+
+    /* Scanline effect (Overlay) */
+    .scanlines {
       position: absolute;
       top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-      z-index: 2;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      z-index: 2; /* On top of canvas */
       background-size: 100% 3px, 3px 100%;
       pointer-events: none;
     }
 
     .terminal {
       max-width: 900px;
-      margin: 0 auto;
-      z-index: 3;
-      width: 100%;
+      width: 90%;
+      z-index: 3; /* Top layer for interaction */
+      padding: 2rem;
     }
 
     p {
@@ -55,47 +75,36 @@
     }
     a:hover { background-color: #33ff00; color: #000; text-decoration: none; }
 
-    /* --- Progress Bar Styles --- */
+    /* Progress Bar */
     .progress-wrapper {
       opacity: 0;
       animation: typeOn 0.5s forwards;
-      animation-delay: 3.5s; /* Appears after text logs */
+      animation-delay: 3.5s;
       margin-bottom: 2rem;
     }
-
-    .progress-label {
-      margin-bottom: 5px;
-      font-size: 1.2rem;
-    }
-
+    .progress-label { margin-bottom: 5px; font-size: 1.2rem; }
     .progress-container {
       border: 2px solid #33ff00;
       height: 30px;
       width: 100%;
       max-width: 600px;
-      position: relative;
-      padding: 3px; /* Space between border and fill */
-      box-sizing: border-box;
+      padding: 3px;
     }
-
     .progress-fill {
       background-color: #33ff00;
       height: 100%;
       width: 0%;
-      /* The filling animation */
-      transition: width 0.1s linear; 
       box-shadow: 0 0 10px rgba(51, 255, 0, 0.5);
     }
 
-    /* --- Abort Button Styles --- */
+    /* Abort Button */
     .abort-container {
       opacity: 0;
       animation: typeOn 0.5s forwards;
       animation-delay: 3.5s;
     }
-
     .abort-btn {
-      background: transparent;
+      background: rgba(0,0,0,0.8); /* Semi-transparent black background */
       border: 2px solid #ff3333;
       color: #ff3333;
       font-family: 'Courier New', Courier, monospace;
@@ -106,14 +115,13 @@
       text-transform: uppercase;
       box-shadow: 0 0 10px rgba(255, 51, 51, 0.2);
     }
-
     .abort-btn:hover {
       background: #ff3333;
       color: #000;
       box-shadow: 0 0 20px rgba(255, 51, 51, 0.6);
     }
 
-    /* Delays for text lines */
+    /* Delays */
     .line-1 { animation-delay: 0.2s; }
     .line-2 { animation-delay: 1.0s; }
     .line-3 { animation-delay: 1.8s; }
@@ -131,6 +139,10 @@
   </style>
 </head>
 <body>
+
+  <canvas id="matrix-canvas"></canvas>
+  
+  <div class="scanlines"></div>
 
   <div class="terminal" id="terminal">
     <p class="line-1">colin@server:~$ <span class="highlight">./init_sequence.sh</span></p>
@@ -152,59 +164,97 @@
   </div>
 
   <script>
+    // --- MATRIX RAIN SCRIPT ---
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Make canvas full screen
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const binary = "01"; 
+    const fontSize = 16;
+    const columns = canvas.width / fontSize; 
+
+    // Array of drops - one per column
+    const drops = [];
+    for(let x = 0; x < columns; x++) drops[x] = 1;
+
+    function drawMatrix() {
+      // Black BG with very slight opacity to create trail effect
+      ctx.fillStyle = "rgba(13, 13, 13, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#33ff00"; // Green text
+      ctx.font = fontSize + "px monospace";
+
+      for(let i = 0; i < drops.length; i++) {
+        const text = binary.charAt(Math.floor(Math.random() * binary.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        // Randomly send drop back to top after it crosses screen
+        // Adding randomness to the reset makes them fall scattered
+        if(drops[i] * fontSize > canvas.height && Math.random() > 0.975)
+          drops[i] = 0;
+
+        drops[i]++;
+      }
+    }
+
+    // Run Matrix effect every 33ms (approx 30fps)
+    const matrixInterval = setInterval(drawMatrix, 33);
+
+    // Handle Resize
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+
+    // --- REDIRECT LOGIC ---
     const targetUrl = "https://vexel.wtf";
-    // Timings
-    const textLoadTime = 3500;   // 3.5s for text to appear
-    const transferTime = 3000;   // 3s for bar to fill
-    const totalTime = textLoadTime + transferTime; 
+    const textLoadTime = 3500;   
+    const transferTime = 3000;   
     
     let aborted = false;
     let startTime = null;
 
-    // Start the whole sequence
-    requestAnimationFrame(animate);
+    requestAnimationFrame(animateRedirect);
 
-    function animate(timestamp) {
+    function animateRedirect(timestamp) {
       if (!startTime) startTime = timestamp;
       const elapsed = timestamp - startTime;
 
-      if (aborted) return; // Stop everything if aborted
+      if (aborted) return; 
 
-      // Only start calculating progress AFTER textLoadTime (3.5s)
       if (elapsed > textLoadTime) {
-        
-        // Calculate progress (0 to 1)
         const progressTime = elapsed - textLoadTime;
         let percent = Math.min(progressTime / transferTime, 1);
         
-        // Update visual width and text
-        document.getElementById('progress-fill').style.width = (percent * 100) + "%";
-        document.getElementById('percentage').innerText = Math.floor(percent * 100) + "%";
+        // Update bar
+        const fill = document.getElementById('progress-fill');
+        if(fill) fill.style.width = (percent * 100) + "%";
+        
+        const perEl = document.getElementById('percentage');
+        if(perEl) perEl.innerText = Math.floor(percent * 100) + "%";
 
-        // Redirect when complete
         if (percent >= 1) {
              window.location.href = targetUrl;
              return;
         }
       }
-
-      // Keep looping
-      requestAnimationFrame(animate);
+      requestAnimationFrame(animateRedirect);
     }
 
     function stopRedirect() {
       aborted = true;
-      
-      // UI Updates for Abort State
       document.getElementById('abort-box').style.display = 'none';
       
-      // Freeze bar and turn red
       const bar = document.getElementById('progress-fill');
       bar.style.backgroundColor = '#ff3333';
       bar.style.boxShadow = '0 0 10px rgba(255, 51, 51, 0.5)';
       document.querySelector('.progress-container').style.borderColor = '#ff3333';
       
-      // Update text logs
       const terminal = document.getElementById('terminal');
       
       const msg1 = document.createElement('p');
@@ -220,7 +270,6 @@
       terminal.appendChild(msg1);
       terminal.appendChild(msg2);
 
-      // Move cursor
       document.getElementById('status-line').classList.remove('cursor');
       msg2.classList.add('cursor');
     }
