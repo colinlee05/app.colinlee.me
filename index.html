@@ -2,51 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  < title>prog1.colinlee.me</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>root@colinlee.me: ~</title>
   <style>
     body {
-      font-family: system-ui, sans-serif;
-      max-width: 700px;
-      margin: 80px auto;
-      padding: 0 20px;
-      color: #222;
-      line-height: 1.6;
+      background-color: #0d0d0d; /* Deep black-gray */
+      color: #33ff00; /* Classic Terminal Green */
+      font-family: 'Courier New', Courier, monospace;
+      height: 100vh;
+      margin: 0;
+      padding: 2rem;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      text-shadow: 0 0 5px rgba(51, 255, 0, 0.4);
     }
-    h1 {
-      font-size: 2.2rem;
+
+    /* Scanline effect overlay */
+    body::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      z-index: 2;
+      background-size: 100% 2px, 3px 100%;
+      pointer-events: none;
     }
-    ul {
-      margin-left: 1.2rem;
+
+    .terminal {
+      max-width: 800px;
+      margin: 0 auto;
+      z-index: 1;
     }
-    footer {
-      margin-top: 60px;
-      font-size: 0.9rem;
-      color: #666;
+
+    p {
+      margin: 0 0 10px 0;
+      opacity: 0; /* Hidden by default for animation */
+      animation: typeOn 0.1s forwards;
+    }
+
+    .highlight {
+      color: #fff;
+      font-weight: bold;
+    }
+
+    /* Staggered animation delays to simulate loading */
+    .line-1 { animation-delay: 0.2s; }
+    .line-2 { animation-delay: 1.0s; }
+    .line-3 { animation-delay: 1.8s; }
+    .line-4 { animation-delay: 2.5s; }
+    .line-5 { animation-delay: 3.2s; }
+
+    /* The blinking cursor at the end */
+    .cursor::after {
+      content: '█';
+      animation: blink 1s infinite;
+      margin-left: 5px;
+    }
+
+    @keyframes typeOn {
+      to { opacity: 1; }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <h1>prog1.colinlee.me</h1>
-  <p><em>Personal programming experiments & learning projects</em></p>
 
-  <p>
-    This site is a placeholder for small programming projects, experiments,
-    and ideas I’m actively exploring. Nothing public yet — but something’s
-    always in progress.
-  </p>
+  <div class="terminal">
+    <p class="line-1">colin@server:~$ <span class="highlight">./init_sequence.sh</span></p>
+    <p class="line-2">> Compiling assets... [OK]</p>
+    <p class="line-3">> Establish uplink to VEXEL_NODE...</p>
+    <p class="line-4">> Target acquired: <span class="highlight">vexel.wtf</span></p>
+    <p class="line-5 cursor">> Rerouting traffic now...</p>
+  </div>
 
-  <h2>Ideas in the queue</h2>
-  <ul>
-    <li>Tiny tools for everyday problems</li>
-    <li>Data experiments and visualizations</li>
-    <li>Automation and scripting projects</li>
-    <li>Games or simulations</li>
-    <li>Learning builds to understand systems better</li>
-  </ul>
+  <script>
+    // Redirects to your new site after 3.8 seconds
+    setTimeout(function() {
+        window.location.href = "https://vexel.wtf";
+    }, 3800);
+  </script>
 
-  <footer>
-    Status: quietly building<br />
-    Last updated: January 2026
-  </footer>
 </body>
 </html>
